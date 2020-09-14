@@ -24,3 +24,6 @@ ansible -i inventory multi -b -m yum -a "name=ntp state=present"
 
 ansible -i inventory multi --become --ask-become-pass -m yum -a "name=ntp state=present"
 
+enabled=yes will cause restart of the service deamons upon reboot
+
+ansible -i inventory multi -b -m service -a "name=ntpd state=started enabled=yes"
