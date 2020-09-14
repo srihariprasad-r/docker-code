@@ -1,0 +1,26 @@
+Ansible uses command to run by default, "-a" represents argument to that module.
+Use "-m" to use module instead
+
+ansible -i inventory multi -a "hostname"
+
+ansible -i inventory multi -m "ping"
+
+ansible -i inventory multi -a "df -h"
+
+ansible -i inventory multi -a "free -h"
+
+Ansible creates forks to run the arguments in parallel, to make it as sequential, run with below
+
+-f represents number of forks on servers, by default it is 5
+
+ansible -i inventory multi -a "hostname" -f 1
+
+Ansible will use '-b' which takes sudo access to install packages, here we will use yum module and install ntp server
+-b and --become are synonymus
+
+ansible -i inventory multi -b -m yum -a "name=ntp state=present"
+
+--ask-become-pass will request for sudo passwork, -k does the same
+
+ansible -i inventory multi --become --ask-become-pass -m yum -a "name=ntp state=present"
+
