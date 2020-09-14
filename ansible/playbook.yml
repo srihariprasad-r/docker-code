@@ -1,6 +1,10 @@
 ---
 - hosts: all
-  become : yes
+  become: yes
   tasks:
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
     - name: Ensure NTP is installed
-      yum: name=ntp state=present
+      apt: name=ntp state=present
+    - name: Ensure NTP is running
+      service: name=ntpd state=started enabled=yes
