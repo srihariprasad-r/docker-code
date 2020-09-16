@@ -5,12 +5,12 @@
   tasks:
     - name: Install Apache
       yum: 
-        name: " {{ modules }} " 
-        vars:
-          modules:
-          - httpd
-          - httpd-devel
-        state: present
+        name: "{{ packages }}" 
+        state: present        
+      vars:
+        packages:
+        - httpd
+        - httpd-devel
 
     - name: Copy configuration files
       copy:
