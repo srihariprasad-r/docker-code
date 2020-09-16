@@ -39,3 +39,15 @@ ansible -i inventory multi -b -m async_status -a "jid=........"
 Ansible vault will be used to store api_keys/secrets etc, below command will encrypt
 
 ansible-vault encrypt playbook.yml
+
+To execute playbook which has secrets, there is --ask-vault-pass argument to be passed
+
+ansible-playbook playbook.yml --ask-vault-pass
+
+Ansible vault playbooks can be edited without decrypting the encrypted version
+
+ansible-vault edit playbook.yml
+
+And vault passwords can be changed using
+
+$ ansible-vault rekey playbook.yml
