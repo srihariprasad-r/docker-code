@@ -35,3 +35,7 @@ ansible -i inventory multi -b -B 3600 -p 0 -a "yum -y install"
 Above command will provide job id, which can be passed to async_status module
 
 ansible -i inventory multi -b -m async_status -a "jid=........"
+
+Ansible vault will be used to store api_keys/secrets etc, below command will encrypt
+
+ansible-vault encrypt playbook.yml

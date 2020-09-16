@@ -1,0 +1,20 @@
+---
+- name: Vault example
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - api_key.yml
+  
+  tasks:
+    - name: Echo API key
+      shell: echo $api_key
+      environment:
+        api_key: "{{ myapp_api_key }}"
+      register: echo_result
+    
+    - name: Show the key
+      debug: var=echo_result.stdout
+
+
+
