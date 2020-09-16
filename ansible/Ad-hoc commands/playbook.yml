@@ -1,0 +1,12 @@
+---          
+- name: Install Apache                                                                                                                                                                                               
+  hosts: all            
+                                                                                                                                                                                                                                                                                                                                                                                                                
+  tasks:                                                                                                                                                                                                               
+    - name: Install Apache                                                                                                                                                                                               
+      command: yum install --quite -y http http-devel                                                                                                                                                                 
+    - name: Copy configuration file                                                                                                                                                                                      
+      command: cp http.conf /etc/httpd/conf/http.conf                                                                                                                                                                  
+    - name: Start Apache and run at boot                                                                                                                                                                                 
+      command: service httpd start                                                                                                                                                                                     
+    - command: chkconfig httpd on
