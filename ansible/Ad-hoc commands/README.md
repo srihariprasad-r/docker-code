@@ -49,5 +49,6 @@ Ansible vault playbooks can be edited without decrypting the encrypted version
 ansible-vault edit playbook.yml
 
 And vault passwords can be changed using
-
+```console
 $ ansible-vault rekey playbook.yml
+```
