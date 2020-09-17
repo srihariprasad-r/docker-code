@@ -22,6 +22,12 @@
         line: "#This is only for demo purpose"
       become: no
 
+    - name: Extract variables from hosts
+      shell: 'source ~/.bash_profile && echo $PATH'
+      register: env_var
+
+    - debug: msg="output from hosts is {{ env_var.stdout }}"
+
     - name: Ensure apache is running and start at boot
       service:
         name: httpd
