@@ -21,5 +21,8 @@
         name: httpd
         state: started
         enabled: true
+    
+    - name: Ensure handlers are run immediately
+      meta: flush_handlers
 
       
