@@ -16,6 +16,12 @@
         state: present
       notify: restart Apache
 
+    - name: Add entry into host terminal
+      lineinfile:
+        dest: "~/.bash_profile"
+        line: "#This is only for demo purpose"
+      become: no
+
     - name: Ensure apache is running and start at boot
       service:
         name: httpd
