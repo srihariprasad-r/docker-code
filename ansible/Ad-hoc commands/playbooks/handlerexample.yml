@@ -1,0 +1,24 @@
+---
+- name: Install Apache
+  hosts: all      
+  become: yes
+
+  handlers:
+    - name: restart Apache
+      service: 
+        name: httpd
+        state: restarted
+
+  tasks:
+    - name: Ensure Apache is installed
+      yum:
+        name: httpd
+        state: present
+
+    - name: Ensure apache is running and start at boot
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+      
