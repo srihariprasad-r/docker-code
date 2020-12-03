@@ -1,20 +1,28 @@
 Below command will have to be run on top of folder which has 'Dockerfile' in it.
 
 ```console
-$ docker build --network host .
+$ docker build -t <name:tag> --network host .
+
+arguments:
+-t -> name will be set to 'REPOSITORY' and tag will set to 'TAG' fields under docker images
 ```
 
 When you execute docker with docker run command, it runs in attached mode, terminal will be running in foreground.
 Note: adding '-d' argument before container will change this to detached mode.
 
 ```console
-$ docker run `<#container-id>`
+$ docker run <#container-id> --name <name of container>
 
 arguments:
 -d -> detached mode (default is attached mode)
 -p -> port example localhost:<port> on your browser
 -i -> interactive
 -t -> Allow psuedo TTY terminal
+--name -> this will add container name under docker ps
+
+Note:
+
+If this container build has a valid --tag assigned, you can use that instead of <#container-id>
 ```
 
 To attach console back to the container when run on detach mode, use below
