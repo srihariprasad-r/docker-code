@@ -5,7 +5,7 @@ $ docker build --network host .
 ```
 
 When you execute docker with docker run command, it runs in attached mode, terminal will be running in foreground.
-Note adding '-d' argument before container will change this to detached mode.
+Note: adding '-d' argument before container will change this to detached mode.
 
 ```console
 $ docker run <#container-id>
@@ -22,6 +22,7 @@ $ docker attach <#container-id>
 ```
 
 Rather, docker start will run process in background(detached mode)
+Note: adding '-a' argument before container will change this to attached mode.
 
 ```console
 $ docker start <#container-id>
@@ -39,4 +40,14 @@ To stop a running container use below
 
 ```console
 $ docker stop <#container-id>
+```
+
+Below command captures logs on a container(useful for container running on detached mode)
+
+```console
+$ docker logs <#container-id>
+
+arguments:
+
+-f this argument will convert the logs to keep listening for changes(behaves as attached mode)
 ```
