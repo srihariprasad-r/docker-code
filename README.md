@@ -8,7 +8,7 @@ When you execute docker with docker run command, it runs in attached mode, termi
 Note: adding '-d' argument before container will change this to detached mode.
 
 ```console
-$ docker run <#container-id>
+$ docker run `<#container-id>`
 
 arguments:
 -d -> detached mode (default is attached mode)
