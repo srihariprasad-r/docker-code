@@ -13,6 +13,8 @@ $ docker run <#container-id>
 arguments:
 -d detached mode (default is attached mode)
 -p port example localhost:<port> on your browser
+-i interactive
+-t Allow psuedo TTY terminal
 ```
 
 To attach console back to the container when run on detach mode, use below
@@ -26,6 +28,10 @@ Note: adding '-a' argument before container will change this to attached mode.
 
 ```console
 $ docker start <#container-id>
+
+arguments:
+-a attached
+-i Allow STDIN
 ```
 
 To list only running containers use docker ps, and to know all containers use docker ps -a instead
@@ -51,3 +57,34 @@ arguments:
 
 -f this argument will convert the logs to keep listening for changes(behaves as attached mode)
 ```
+
+To list the images available
+
+```console
+$ docker images
+```
+
+To remove containers use,
+
+```console
+$ docker rm <#container-id>
+```
+
+To remove images use,
+
+```console
+$ docker rmi <#image-id>
+```
+
+To remove unused images, use
+
+```console
+$ docker images prune
+```
+
+To remove mutiple images at a time with TAG=<none>, 
+
+```console
+$ docker images | grep none | awk '${print $3}' | xargs docker rmi
+```
+
