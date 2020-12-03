@@ -11,10 +11,10 @@ Note: adding '-d' argument before container will change this to detached mode.
 $ docker run <#container-id>
 
 arguments:
--d detached mode (default is attached mode)
--p port example localhost:<port> on your browser
--i interactive
--t Allow psuedo TTY terminal
+-d -> detached mode (default is attached mode)
+-p -> port example localhost:<port> on your browser
+-i -> interactive
+-t -> Allow psuedo TTY terminal
 ```
 
 To attach console back to the container when run on detach mode, use below
@@ -30,8 +30,8 @@ Note: adding '-a' argument before container will change this to attached mode.
 $ docker start <#container-id>
 
 arguments:
--a attached
--i Allow STDIN
+-a -> attached
+-i -> Allow STDIN
 ```
 
 To list only running containers use docker ps, and to know all containers use docker ps -a instead
@@ -55,7 +55,7 @@ $ docker logs <#container-id>
 
 arguments:
 
--f this argument will convert the logs to keep listening for changes(behaves as attached mode)
+-f -> this argument will convert the logs to keep listening for changes(behaves as attached mode)
 ```
 
 To list the images available
@@ -82,9 +82,27 @@ To remove unused images, use
 $ docker images prune
 ```
 
-To remove mutiple images at a time with TAG=<none>, 
+To remove mutiple images at a time with TAG=`<none>`, 
 
 ```console
 $ docker images | grep none | awk '${print $3}' | xargs docker rmi
 ```
+
+To remove container when exited, use 
+
+```console
+$ docker run -p port -d --rm <#container-id>
+
+arguments:
+--rm -> This will remove this container when this container is stopped using docker stop
+```
+
+To copy files into container
+
+```console
+$ docker cp <folder/file to be copied> <#container-id>:/<target-folder>
+
+Note: If target-folder is not present, this would be created
+```
+
 
