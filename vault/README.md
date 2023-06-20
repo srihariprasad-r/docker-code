@@ -1,11 +1,11 @@
-Install docker
+## Install docker ##
 
-If any certs issue, run below. Else proceed to next step
+## If any certs issue, run below. Else proceed to next step ##
 ```console
 $ docker-machine regenerate-certs --client-certs
 ```
 
-Step into DockerFile path and run below
+## Step into DockerFile path and run below ##
 ```console
 $ docker build -t vault-poc .
 $ docker-compose up -d vault-filesystem
@@ -15,9 +15,11 @@ $ docker ps
 $ docker exec -it vault_vault-filesystem_1 /bin/sh
 / # vault status
 / # vault operator init
-# note down root token (very important!) with five unseal keys - it won't be available
 
-# try with three different unseal keys
+### note down root token (very important!) with five unseal keys - it won't be available ###
+
+### try with three different unseal keys ###
+
 / # vault operator unseal
 / # vault operator unseal
 / # vault operator unseal
@@ -26,12 +28,13 @@ $ docker exec -it vault_vault-filesystem_1 /bin/sh
 
 / # exit
 
-# get ip to access web UI of vault
+### get ip to access web UI of vault ###
+
 $ docker inspect -f \
 > '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <name of container>
 ```
 
-# login back to container for Transit 
+## login back to container for Transit  ##
 ```console
 docker exec -it vault_vault-filesystem_1 /bin/sh
 / # vault secrets enable transit
