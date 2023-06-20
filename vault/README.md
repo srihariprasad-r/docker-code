@@ -41,3 +41,9 @@ docker exec -it vault_vault-filesystem_1 /bin/sh
 / # vault write transit/keys/demo-key type=aes256-gcm96
 / # vault write transit/encrypt/demo-key plaintext=$(base64 << "my secret key")
 ```
+
+## execute python container  ##
+```console
+$ docker-compose up -d app
+$ docker run -it --entrypoint=/bin/bash vault_app
+```
