@@ -23,6 +23,9 @@ RUN wget --quiet --output-document=/tmp/vault.zip https://releases.hashicorp.com
 
 # update PATH
 ENV PATH="PATH=$PATH:$PWD/vault"
+ENV VAULT_ADDR=http://vault-demo:8200
+ENV VAULT_API_ADDR=http://127.0.0.1:8200
+ENV PSQL_ADDR=http://vault_db_1:5432
 
 # add the config file
 COPY ./config/vault-config.json /vault/config/vault-config.json

@@ -18,17 +18,17 @@ CREATE TABLE IF NOT EXISTS customers (
     first_name varchar(255) NOT NULL,
     last_name varchar(255) NOT NULL,
     create_date varchar(255) NOT NULL,
-    social_security_number` varchar(255) NOT NULL,
-    credit_card_number` varchar(255) NOT NULL,
+    social_security_number varchar(255) NOT NULL,
+    credit_card_number varchar(255) NOT NULL,
     address varchar(255) NOT NULL,
     salary varchar(255) NOT NULL
 )
 '''
 
 seed_customers = '''
-INSERT IGNORE into customers (birth_date, first_name, last_name, create_date, social_security_number, credit_card_number, address, salary)
+INSERT into customers (birth_date, first_name, last_name, create_date, social_security_number, credit_card_number, address, salary)
      VALUES
-  ("3/14/69", "Larry", "Johnson", "2020-01-01T14:49:12.301977", "360-56-6750", "3600-5600-6750-0000", "Tyler, Texas", "7000000"),
+  ('2023-03-10', 'Larry', 'Johnson', '2020-01-01T14:49:12.301977', '360-56-6750', '3600-5600-6750-0000', 'Tyler, Texas', '7000000')
 '''
 
 

@@ -27,7 +27,8 @@ vault write data_protection/database/config/postgres \
 vault write data_protection/database/roles/vault-demo-app \
     db_name="postgres" \
     creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
-        GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
+        GRANT ALL ON ALL TABLES IN SCHEMA public TO \"{{name}}\" ;\
+        GRANT USAGE ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
     default_ttl="1h" \
     max_ttl="24h"
 

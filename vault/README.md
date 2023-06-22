@@ -1,65 +1,54 @@
-## Install docker ##
+## Instructions
 
-## If any certs issue, run below. Else proceed to next step ##
-```console
-$ docker-machine regenerate-certs --client-certs
+### Pre-requisite
+- Docker desktop
+- Python 3.7+
+- VS Code (recommended)
+
+Open a terminal to execute vault image, this will be interative image
+
+```sh
+cd src/dev/
+sh start_vault.sh 
 ```
 
-## Step into DockerFile path and run below ##
-```console
-$ docker build -t vault-poc .
-$ docker-compose up -d vault-filesystem
+Open VSCode(IDE) Terminal, (3 terminals may be needed)
 
-$ docker ps
-
-$ docker exec -it vault_vault-filesystem_1 /bin/sh
-/ # vault status
-/ # vault operator init
-
-<!--- note down root token (very important!) with five unseal keys - it won't be available -->
-
-<!--- try with three different unseal keys -->
-
-/ # vault operator unseal
-/ # vault operator unseal
-/ # vault operator unseal
-
-/ # vault login
-
-/ # exit
-
-<!--- get ip to access web UI of vault -->
-
-$ docker inspect -f \
-> '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <name of container>
+```sh
+cd src/dev/
+docker build -t vault-app .
 ```
 
-## login back to container for Transit  ##
-```console
-docker exec -it vault_vault-filesystem_1 /bin/sh
-/ # vault secrets enable transit
-/ # vault write transit/keys/demo-key type=aes256-gcm96
-/ # vault write transit/encrypt/demo-key plaintext=$(base64 << "my secret key")
+Then, run below command
+
+```sh
+cd src/database/
+docker build -t vault-db .
 ```
 
-## execute python container  ##
-```console
-$ docker-compose up -d app
-$ docker run -it --entrypoint=/bin/bash vault_app
+and
+
+```sh
+cd ../../
+docker-compose up -d db
+
+# once above command is complete,  proceed executing below command
+# docker-compose up -d app
 ```
 
-# packages to update files in docker
-```console
-$ apt-get update
-$ apt-get install apt-file
-$ apt-file update
-$ apt-get install vim  
+Open another terminal,
+
+```sh
+# running python image manually instead of docker-compose as python container exits upon start
+docker run --name vault_app_1 --network vault_dev-network -it vault-app /bin/sh
+export PSQL_ADDR=http://vault_db_1:5432
+```
+Open another terminal,
+
+```sh
+# running python image manually instead of docker-compose as python container exits upon start
+docker exec -it <vault-image-container#> /bin/sh
+# create db credetials secrets in vault
+sh database-setup.sh 
 ```
 
-```console
-192.168.32.2 - postgres
-192.168.64.2 - vault
-
-172.18.0.3 - vault
-172.18.0.2 - postgres
-```
