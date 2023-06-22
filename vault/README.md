@@ -47,3 +47,19 @@ docker exec -it vault_vault-filesystem_1 /bin/sh
 $ docker-compose up -d app
 $ docker run -it --entrypoint=/bin/bash vault_app
 ```
+
+# packages to update files in docker
+```console
+$ apt-get update
+$ apt-get install apt-file
+$ apt-file update
+$ apt-get install vim  
+```
+
+```console
+192.168.32.2 - postgres
+192.168.64.2 - vault
+
+172.18.0.3 - vault
+172.18.0.2 - postgres
+```
