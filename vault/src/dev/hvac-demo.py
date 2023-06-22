@@ -58,9 +58,9 @@ def pgsql_connection(role=''):
     return conn
 
 
-def execute(sqlstmt, username, cipher, connection):
+def execute(sqlstmt, connection):
     cursor = connection.cursor()
-    cursor.execute(sqlstmt, {username, cipher})
+    cursor.execute(sqlstmt)
     connection.commit()
 
 
