@@ -32,7 +32,7 @@ INSERT into customers (birth_date, first_name, last_name, create_date, social_se
 '''
 
 
-def encyrpt(plain_text, encrypt_key):
+def encyrpt_ssn(plain_text, encrypt_key):
     encoded = base64.b64encode(plain_text.encode('utf-8'))
     cipher = client.secrets.transit.encrypt_data(name=encrypt_key,
                                                  plain_text=str(
@@ -48,14 +48,7 @@ def decrypt(ciphertext, decrypt_key):
     return str(base64.b64decode(decrypt_data['data']['plaintext']), 'utf-8')
 
 
-def pgsql_connection(role=''):
-    # psql_credentials = client.secrets.database.generate_credentials(name=role)
-    psql_credentials = client.read(
-        'data_protection/database/creds/vault-demo-app')
-    conn = psycopg2.connect(host='vault_db_1', database=db_name,
-                            user=psql_credentials['data']['username'],
-                            password=psql_credentials['data']['password'])
-    return conn
+
 
 
 def execute(sqlstmt, connection):
