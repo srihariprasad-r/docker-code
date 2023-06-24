@@ -3,7 +3,7 @@ import base64
 import requests
 
 class hvacClient(object):
-    def __init__(self, hvac_url, token, namespace, ssn_role, ccn_role):
+    def __init__(self, hvac_url, token, namespace, ssn_role='', ccn_role=''):
         self.hvac_url = hvac_url
         self.token = token
         self.namespace = namespace
@@ -65,4 +65,6 @@ class hvacClient(object):
         return response.json()['data']['decoded_value']
 
     def _encrypt_non_ssn_ccn(self, value):
+        keyname = self.conf['VAULT']['KeyName']
+        mountpath = self.conf['VAULT']['secretPath']
         return self.encrypt_non_ssn_ccn(keyname, mountpath, value)

@@ -8,7 +8,7 @@ services:
     networks: 
       - dev-network
     environment:
-      - VAULT_ADDR=http://vault-demo:8200
+      - VAULT_ADDR=http://vault_demo_1:8200
       - VAULT_API_ADDR=http://127.0.0.1:8200
       - VAULT_TOKEN=root
       - VAULT_NAMESPACE=dev
@@ -41,7 +41,7 @@ services:
     ports:
       - '8080:8080'
     environment:
-      - VAULT_ADDR=http://vault-demo:8200
+      - VAULT_ADDR=http://vault_demo_1:8200
       - PSQL_ADDR=http://vault_db_1:5432
     volumes:
       - .:/src/dev
