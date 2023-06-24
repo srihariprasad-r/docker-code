@@ -64,3 +64,5 @@ class hvacClient(object):
 
         return response.json()['data']['decoded_value']
 
+    def _encrypt_non_ssn_ccn(self, value):
+        return self.encrypt_non_ssn_ccn(keyname, mountpath, value)

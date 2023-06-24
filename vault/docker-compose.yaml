@@ -1,18 +1,20 @@
 version: '3.3'
 
 services:
-  # vault-filesystem:
-  #   image: hashicorp/vault-enterprise:1.4.0_ent
-  #   ports:
-  #     - '8200:8200'
-  #   networks: 
-  #     - dev-network
-  #   environment:
-  #     - VAULT_ADDR=http://vault-demo:8200
-  #     - VAULT_API_ADDR=http://127.0.0.1:8200
-  #   command: server -config=/vault/config/vault-config.json -dev
-  #   cap_add:
-  #     - IPC_LOCK
+  demo:
+    image: vault-poc:latest
+    ports:
+      - '8200:8200'
+    networks: 
+      - dev-network
+    environment:
+      - VAULT_ADDR=http://vault-demo:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+      - VAULT_TOKEN=root
+      - VAULT_NAMESPACE=dev
+    command: server -dev
+    cap_add:
+      - IPC_LOCK
   db:
     image: postgres:14.1
     restart: always

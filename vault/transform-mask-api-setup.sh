@@ -2,6 +2,10 @@ export VAULT_ADDR=http://localhost:8200
 export VAULT_TOKEN=root
 export VAULT_NAMESPACE=dev
 
+# create namespace dev
+vault namespace delete dev/
+vault namespace create dev
+
 #enable the transform secret engine for masking
 vault secrets disable data_protection/masking/transform
 vault secrets enable  -path=data_protection/masking/transform transform

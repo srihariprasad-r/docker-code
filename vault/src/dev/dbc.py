@@ -2,8 +2,7 @@ import psycopg2
 from hvac import hvacClient
 
 class DBClient(hvacClient):
-    def __init__(self, client, host, dbname, table):
-        self.client = client
+    def __init__(self, host, dbname, table):
         self.host = host
         self.dbname = dbname
         self.table = table
@@ -40,10 +39,11 @@ class DBClient(hvacClient):
             r['address'] = row[7]
             r['salary'] = row[8]
             if self.client is not None:
-                r['birth_date'] = self.decrypt(r['birth_date'])
-                r['ssn'] = self.decode_ssn(r['ssn'])
-                r['address'] = self.decrypt(r['address'])
-                r['salary'] = self.decrypt(r['salary'])
+                r['birth_date'] = hvacClient._decrypt_non_ssn_ccn(r['birth_date'])
+                r['ssn'] = hvacClient._decode_ssn_ccn(r['ssn'])
+                r['ccn'] = hvacClient._decode_ssn_ccn(r['ccn'])
+                r['address'] = hvacClient._decrypt_non_ssn_ccn(r['address'])
+                r['salary'] = hvacClient._decrypt_non_ssn_ccn(r['salary'])
             results.append(r)
         
         return results
