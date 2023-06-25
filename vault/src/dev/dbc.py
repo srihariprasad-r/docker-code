@@ -1,5 +1,5 @@
 import psycopg2
-from hvac import hvacClient
+from app import hvacClient
 import configparser
 
 customer_table = '''
@@ -48,42 +48,41 @@ class DBClient(hvacClient):
         return conn
     
     def executeSQL(self, sqlstmt, connection=None):
+        cursor = None
         try:
             cursor = connection.cursor()
             cursor.execute(sqlstmt)
             connection.commit()
         except:
             raise Exception('sql statement throws error. Aborting!')
-        
+        return cursor
+    
     def insert_statement(self, row):
+        bdt = self._encrypt_non_ssn_ccn(row[1], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        ssn=self._encrypt_non_ssn_ccn(row[5], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        ccn = self._encrypt_non_ssn_ccn(row[6], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        addr=self._encrypt_non_ssn_ccn(row[7], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        sal = self._encrypt_non_ssn_ccn(row[8], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         statement = '''INSERT INTO customers VALUES (birth_date, first_name, last_name, create_date, \
             social_security_number, credit_card_number, address, salary)
-                                    VALUES  ("{}", "{}", "{}", "{}", "{}", "{}", "{}","{}");'''\
-                                        .format(self._encrypt_non_ssn_ccn(row['birth_date']), row['first_name'], row['last_name'],
-                                                row['create_date'], \
-                                                    self._encrypt_non_ssn_ccn(row['ssn']), \
-                                                    self._encrypt_non_ssn_ccn(row['ccn']), \
-                                                self._encrypt_non_ssn_ccn(row['address']), self._encrypt_non_ssn_ccn(row['salary']))
+            VALUES  ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');'''\
+                    % (str(bdt), \
+                       str(row[2]), str(row[3]),str(row[4]), \
+                       str(ssn), \
+                       str(ccn), \
+                       str(addr), \
+                       str(sal)
+                )
         return statement
     
     def get_table_rows(self, table, limit=1):
-        sql = " SELECT * FROM " + self.dbname + '.' + str(table) + ' LIMIT {}'.format(limit)
+        sql = " SELECT * FROM " +  str(table) + ' LIMIT {}'.format(limit)
         connection = self.pgsql_connection()
-        self.executeSQL(sql, connection)
+        cursor = self.executeSQL(sql, connection)
         results = []
 
         for row in cursor:
-            r = {}
-            r['customer_number'] = row[0]
-            r['birth_date'] = row[1]
-            r['first_name'] = row[2]
-            r['last_name'] = row[3]
-            r['create_date'] = row[4]
-            r['ssn'] = row[5]
-            r['ccn'] = row[6]
-            r['address'] = row[7]
-            r['salary'] = row[8]
-            results.append(r)
+            results.append(row)
         
         return results
     
@@ -95,4 +94,7 @@ if __name__ == '__main__':
     conn = dbc.pgsql_connection()
     dbc.executeSQL(customer_table, conn)
     dbc.executeSQL(seed_customers, conn)
-    dbc.get_table_rows(table='customers')
+    rows = dbc.get_table_rows(table='customers')
+    for row in rows:
+        stmt = dbc.insert_statement(row)
+        dbc.executeSQL(stmt, conn)

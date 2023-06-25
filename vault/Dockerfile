@@ -11,7 +11,7 @@ RUN apk --no-cache add \
 
 # update PATH
 ENV PATH="PATH=$PATH:$PWD/vault"
-ENV VAULT_ADDR=http://vault_demo_1:8200
+ENV VAULT_ADDR=http://vault-demo:8200
 ENV VAULT_TOKEN=root
 ENV VAULT_NAMESPACE=dev
 ENV VAULT_API_ADDR=http://127.0.0.1:8200
