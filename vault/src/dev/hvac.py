@@ -34,6 +34,7 @@ class hvacClient(object):
         )
 
         plaintext = response['data']['plaintext']
+        
         return base64.b64decode(plaintext).decode()
     
     def encode_ssn_ccn(self, ssn, transform_mount_point, value):
@@ -68,3 +69,8 @@ class hvacClient(object):
         # keyname = self.conf['VAULT']['KeyName']
         # mountpath = self.conf['VAULT']['secretPath']
         return self.encrypt_non_ssn_ccn(keyname, mountpath, value)
+
+    def _decrypt_non_ssn_ccn(self, value, keyname, mountpath):
+        # keyname = self.conf['VAULT']['KeyName']
+        # mountpath = self.conf['VAULT']['secretPath']
+        return self.decrypt_non_ssn_ccn(keyname, mountpath, value)

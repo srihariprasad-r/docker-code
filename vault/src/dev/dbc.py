@@ -63,7 +63,7 @@ class DBClient(hvacClient):
         ccn = self._encrypt_non_ssn_ccn(row[6], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         addr=self._encrypt_non_ssn_ccn(row[7], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         sal = self._encrypt_non_ssn_ccn(row[8], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
-        statement = '''INSERT INTO customers VALUES (birth_date, first_name, last_name, create_date, \
+        statement = '''INSERT INTO customers (birth_date, first_name, last_name, create_date, \
             social_security_number, credit_card_number, address, salary)
             VALUES  ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');'''\
                     % (str(bdt), \
@@ -75,15 +75,36 @@ class DBClient(hvacClient):
                 )
         return statement
     
-    def get_table_rows(self, table, limit=1):
-        sql = " SELECT * FROM " +  str(table) + ' LIMIT {}'.format(limit)
+    def get_table_rows(self, table, where='' , limit=1):
+        sql = " SELECT * FROM " +  str(table) + where +  ' LIMIT {}'.format(limit)
         connection = self.pgsql_connection()
         cursor = self.executeSQL(sql, connection)
         results = []
 
         for row in cursor:
-            results.append(row)
-        
+            r = {}
+
+            r['birth_date'] = row[1]
+            r['first_name'] = row[2]
+            r['last_name'] = row[3]
+            r['create_date'] = row[4]
+            r['social_security_number'] = row[5]
+            r['credit_card_number'] = row[6]
+            r['address'] = row[7]
+            r['salary'] = row[8]
+            if where and self.client:
+                r['birth_date'] = self._decrypt_non_ssn_ccn(r['birth_date'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+                r['social_security_number'] = self._decrypt_non_ssn_ccn(
+                    r['social_security_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+                r['credit_card_number'] = self._decrypt_non_ssn_ccn(
+                    r['credit_card_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+                r['address'] = self._decrypt_non_ssn_ccn(
+                    r['address'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+                r['salary'] = self._decrypt_non_ssn_ccn(
+                    r['salary'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+
+            results.append(r)
+
         return results
     
 
@@ -98,3 +119,5 @@ if __name__ == '__main__':
     for row in rows:
         stmt = dbc.insert_statement(row)
         dbc.executeSQL(stmt, conn)
+    rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
+    print(rows)

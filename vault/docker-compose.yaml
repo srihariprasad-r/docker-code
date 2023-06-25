@@ -45,8 +45,6 @@ services:
       - PSQL_ADDR=http://vault_db_1:5432
     volumes:
       - .:/src/dev
-    depends_on:
-      - db
 networks:
   dev-network:
     driver: bridge
