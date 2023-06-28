@@ -58,16 +58,16 @@ class DBClient(hvacClient):
         return cursor
     
     def insert_statement(self, row):
-        bdt = self._encrypt_non_ssn_ccn(row[1], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
-        ssn=self._encrypt_non_ssn_ccn(row[5], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
-        ccn = self._encrypt_non_ssn_ccn(row[6], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
-        addr=self._encrypt_non_ssn_ccn(row[7], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
-        sal = self._encrypt_non_ssn_ccn(row[8], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        bdt = self._encrypt_non_ssn_ccn(row['birth_date'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        ssn = self._encrypt_non_ssn_ccn(row['social_security_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        ccn = self._encrypt_non_ssn_ccn(row['credit_card_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        addr = self._encrypt_non_ssn_ccn(row['address'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+        sal = self._encrypt_non_ssn_ccn(row['salary'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         statement = '''INSERT INTO customers (birth_date, first_name, last_name, create_date, \
             social_security_number, credit_card_number, address, salary)
             VALUES  ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');'''\
                     % (str(bdt), \
-                       str(row[2]), str(row[3]),str(row[4]), \
+                       str(row['first_name']), str(row['last_name']), str(row['create_date']), \
                        str(ssn), \
                        str(ccn), \
                        str(addr), \
