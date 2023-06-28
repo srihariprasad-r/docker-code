@@ -167,7 +167,7 @@ b6be9fa77770        vault-demo          1.57%               30.09MiB / 3.856GiB 
 27518d035749        vault_db_1          0.00%               10.98MiB / 3.856GiB   0.28%               3.27kB / 1.94kB     7.93MB / 229kB      10
 ```
 
-# docker sytem df
+# docker system df
 
 ```sh
 TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
