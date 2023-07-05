@@ -1,6 +1,7 @@
 import psycopg2
 from app import hvacClient
 import configparser
+import argparse
 
 customer_table = '''
 CREATE TABLE IF NOT EXISTS customers (
@@ -109,15 +110,23 @@ class DBClient(hvacClient):
     
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--type', type=str, required=True)
+    parser.add_argument('--flag', type=str)
+    args = parser.parse_args()
+
     conf = DBClient.get_config_entries()
     dbc = DBClient(host=conf['DATABASE']['ADDRESS'], dbname=conf['DATABASE']['Database'], url=conf['VAULT']['Address'], \
                    token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'])
     conn = dbc.pgsql_connection()
-    dbc.executeSQL(customer_table, conn)
-    dbc.executeSQL(seed_customers, conn)
-    rows = dbc.get_table_rows(table='customers')
-    for row in rows:
-        stmt = dbc.insert_statement(row)
-        dbc.executeSQL(stmt, conn)
-    rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
-    print(rows)
+    if not args.flag:
+        dbc.executeSQL(customer_table, conn)
+        dbc.executeSQL(seed_customers, conn)
+    if args.flag and args.flag == 'encrypt':
+        rows = dbc.get_table_rows(table='customers')
+        for row in rows:
+            stmt = dbc.insert_statement(row)
+            dbc.executeSQL(stmt, conn)
+    if args.flag and args.flag == 'decrypt':
+        rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
+        print(rows)
