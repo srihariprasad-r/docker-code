@@ -112,21 +112,21 @@ class DBClient(hvacClient):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--type', type=str, required=True)
-    parser.add_argument('--flag', type=str)
+    parser.add_argument('--apply', type=str)
     args = parser.parse_args()
 
     conf = DBClient.get_config_entries()
     dbc = DBClient(host=conf['DATABASE']['ADDRESS'], dbname=conf['DATABASE']['Database'], url=conf['VAULT']['Address'], \
                    token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'])
     conn = dbc.pgsql_connection()
-    if not args.flag:
+    if not args.apply:
         dbc.executeSQL(customer_table, conn)
         dbc.executeSQL(seed_customers, conn)
-    if args.flag and args.flag == 'encrypt':
+    if args.apply and args.apply == 'encrypt':
         rows = dbc.get_table_rows(table='customers')
         for row in rows:
             stmt = dbc.insert_statement(row)
             dbc.executeSQL(stmt, conn)
-    if args.flag and args.flag == 'decrypt':
+    if args.apply and args.apply == 'decrypt':
         rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
         print(rows)

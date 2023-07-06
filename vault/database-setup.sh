@@ -24,6 +24,9 @@ vault write data_protection/database/config/postgres \
     username="postgres" \
     password="postgres"
 
+# rotate root password
+# vault write  -force data_protection/database/rotate-root/postgres
+
 vault write data_protection/database/roles/vault-demo-app \
     db_name="postgres" \
     creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
