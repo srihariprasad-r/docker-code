@@ -1,0 +1,31 @@
+{
+  "files": [{
+    "source_file_name": "file_20230706.txt",
+    "target_file_name": "encrypted_file_20230706.txt",
+    "fields": {
+        "ssn": {
+            "algo": "FPE",
+            "type": "SSN"
+        },
+        "birth_date": {
+            "algo": "FPE",
+            "type": "SSN"
+        }
+    }
+ },
+ {
+    "source_file_name": "file_20230707.txt",
+    "target_file_name": "encrypted_file_20230707.txt",
+    "fields": {
+        "ssn": {
+            "algo": "FPE",
+            "type": "SSN"
+        },
+        "birth_date": {
+            "algo": "FPE",
+            "type": "SSN"
+        }
+    }
+  }
+ ]
+}
