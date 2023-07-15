@@ -23,16 +23,11 @@ INSERT into customers (birth_date, first_name, last_name, create_date, social_se
   ('2023-03-10', 'Larry', 'Johnson', '2020-01-01T14:49:12.301977', '360-56-6750', '3600-5600-6750-0000', 'Tyler, Texas', '7000000')
 '''
 
-class DBClient(hvacClient):
-    def __init__(self, host, dbname, url, token, namespace, table=''):
-        self.host = host
-        self.dbname = dbname
-        self.table = table
-        self.url = url
-        self.token = token
-        self.namespace = namespace
-        super(DBClient, self).__init__(url, token, namespace)
-        self.client = self.get_vault_client()
+class DBClient(object):
+    def __init__(self, **params):
+        self.host = params['host']
+        self.dbname = params['dbname']
+        self.table = params['table']
 
     @staticmethod
     def get_config_entries():
@@ -41,8 +36,8 @@ class DBClient(hvacClient):
             conf.read_file(f)
         return conf
 
-    def pgsql_connection(self, role=''):
-        psql_credentials = self.client.read('data_protection/database/creds/vault-demo-app')
+    def pgsql_connection(self, client, role=''):
+        psql_credentials = client.read('data_protection/database/creds/vault-demo-app')
         conn = psycopg2.connect(host=self.host, database=self.dbname,
                                 user=psql_credentials['data']['username'],
                                 password=psql_credentials['data']['password'])
@@ -58,7 +53,7 @@ class DBClient(hvacClient):
             raise Exception('sql statement throws error. Aborting!')
         return cursor
     
-    def insert_statement(self, row):
+    def insert_statement(self, row, conf):
         bdt = self._encrypt_non_ssn_ccn(row['birth_date'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         ssn = self._encrypt_non_ssn_ccn(row['social_security_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         ccn = self._encrypt_non_ssn_ccn(row['credit_card_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
@@ -76,7 +71,7 @@ class DBClient(hvacClient):
                 )
         return statement
     
-    def get_table_rows(self, table, where='' , limit=1):
+    def get_table_rows(self, table, conf, where='' , limit=1):
         sql = " SELECT * FROM " +  str(table) + where +  ' LIMIT {}'.format(limit)
         connection = self.pgsql_connection()
         cursor = self.executeSQL(sql, connection)
@@ -109,24 +104,24 @@ class DBClient(hvacClient):
         return results
     
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--type', type=str, required=True)
-    parser.add_argument('--apply', type=str)
-    args = parser.parse_args()
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--type', type=str, required=True)
+#     parser.add_argument('--apply', type=str)
+#     args = parser.parse_args()
 
-    conf = DBClient.get_config_entries()
-    dbc = DBClient(host=conf['DATABASE']['ADDRESS'], dbname=conf['DATABASE']['Database'], url=conf['VAULT']['Address'], \
-                   token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'])
-    conn = dbc.pgsql_connection()
-    if not args.apply:
-        dbc.executeSQL(customer_table, conn)
-        dbc.executeSQL(seed_customers, conn)
-    if args.apply and args.apply == 'encrypt':
-        rows = dbc.get_table_rows(table='customers')
-        for row in rows:
-            stmt = dbc.insert_statement(row)
-            dbc.executeSQL(stmt, conn)
-    if args.apply and args.apply == 'decrypt':
-        rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
-        print(rows)
+#     conf = DBClient.get_config_entries()
+#     dbc = DBClient(host=conf['DATABASE']['ADDRESS'], dbname=conf['DATABASE']['Database'], url=conf['VAULT']['Address'], \
+#                    token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'])
+#     conn = dbc.pgsql_connection()
+#     if not args.apply:
+#         dbc.executeSQL(customer_table, conn)
+#         dbc.executeSQL(seed_customers, conn)
+#     if args.apply and args.apply == 'encrypt':
+#         rows = dbc.get_table_rows(table='customers')
+#         for row in rows:
+#             stmt = dbc.insert_statement(row)
+#             dbc.executeSQL(stmt, conn)
+#     if args.apply and args.apply == 'decrypt':
+#         rows = dbc.get_table_rows(where=' WHERE cust_no=2', table='customers')
+#         print(rows)

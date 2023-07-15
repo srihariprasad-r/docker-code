@@ -45,6 +45,10 @@ class fileHandler(preparefiles):
                     self.csvencryptedentries.append(col_vals)
 
         return self.csvencryptedentries
+    
+    def removefile(self, filepath, filename):
+        os.remove(os.path.join(filepath, filename))
+
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser()
