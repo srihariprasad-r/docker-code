@@ -1,31 +1,28 @@
 {
   "files": [{
-    "source_file_name": "file_20230706.txt",
-    "target_file_name": "encrypted_file_20230706.txt",
+    "source_file_name": "customers.csv",
+    "target_file_name": "encrypted_customers_20230715.txt",
     "fields": {
         "ssn": {
-            "algo": "FPE",
-            "type": "SSN"
+            "algo": "TSE",
+            "template": "SSN"
         },
         "birth_date": {
-            "algo": "FPE",
-            "type": "SSN"
-        }
-    }
- },
- {
-    "source_file_name": "file_20230707.txt",
-    "target_file_name": "encrypted_file_20230707.txt",
-    "fields": {
-        "ssn": {
-            "algo": "FPE",
-            "type": "SSN"
+            "algo": "TSE",
+            "template": "SSN"
         },
-        "birth_date": {
-            "algo": "FPE",
-            "type": "SSN"
+        "credit_card_number": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "address": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "salary": {
+            "algo": "TSE",
+            "template": "SSN"
         }
     }
-  }
- ]
+ }]
 }
