@@ -9,6 +9,8 @@ RUN pip install -r /src/dev/requirements.txt
 COPY ./hvac.py /src/dev/app.py
 COPY ./dbc.py /src/dev/dbc.py
 COPY ./fileHandler.py /src/dev/fileHandler.py
+COPY ./files_config.json /src/dev/fileconfig.json
+COPY ./demo.py  /src/dev/demo.py
 COPY ./prepareCustomfiles.py /src/dev/prepareCustomfiles.py
 COPY ./hvac-demo.py /src/dev/hvac-demo.py
 COPY ./config.ini /src/dev/config.ini

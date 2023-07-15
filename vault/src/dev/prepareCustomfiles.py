@@ -28,10 +28,10 @@ class preparefiles(object):
                 '870-06-6650', '7799-6630-6750-9732',  'NY, NY', '875200']
               ]
 
-  def prepare_csv_file(self, filename):
+  def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
        os.makedirs(self.file_path)
     with open(os.path.join(self.file_path , filename), 'w', newline='') as file:
         writer = csv.writer(file, delimiter=self.delimit)
         # writer.writeheader()
-        writer.writerows(self.csventries)
+        writer.writerows(csventries)

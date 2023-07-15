@@ -4,17 +4,17 @@ import argparse
 import json
 
 class fileHandler(preparefiles):
-    def __init__(self, filepath, filetype, delimited=',', hdfs_connection='',aws_connection=''):
-        self.filepath = filepath
-        self.filetype = filetype
-        self.delimited = delimited
-        self.filename = 'customers.csv' if self.file_type == 'csv' else None
+    def __init__(self, hdfs_connection='', aws_connection='', **params):
+        self.filepath = params['filepath']
+        self.filetype = params['filetype']
+        self.delimited = params['csvdelimiter']
+        self.filename = 'customers.csv' if self.filetype == 'csv' else None
         self.targetencryptfilename = None
         self.csvencryptedentries = []
-        super(fileHandler, self).__init__(filepath, filetype, delimited)
+        super(fileHandler, self).__init__(self.filepath, self.filetype, self.delimited)
         
-    def prepare_file(self):
-        return self.prepare_csv_file(self.filename)
+    def prepare_file(self, filename='', entries=''):
+        return self.prepare_csv_file(filename, entries)
     
     def parse_config_fields(self, file):
         with open(file, 'r') as f:
@@ -40,18 +40,22 @@ class fileHandler(preparefiles):
                 self.csvencryptedentries.append(reader.fieldnames)
                 for row in reader:
                     col_vals = []
-                    for _, v in row.items():
+                    for k , v in row.items():
                         col_vals.append(v)
                     self.csvencryptedentries.append(col_vals)
 
         return self.csvencryptedentries
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--filetype', type=str, required=True)
-    parser.add_argument('--filepath', type=str, required=True)
-    parser.add_argument('--csvdelimiter', type=str)
-    args = parser.parse_args()
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--filetype', type=str, required=True)
+#     parser.add_argument('--filepath', type=str, required=True)
+#     parser.add_argument('--csvdelimiter', type=str)
+#     args = parser.parse_args()
 
-    filehandler_object = fileHandler(args.filepath, args.filetype, args.csvdelimiter)
-    filehandler_object.prepare_file()
+#     filehandler_object = fileHandler(args.filepath, args.filetype, args.csvdelimiter)
+#     filehandler_object.prepare_file(filehandler_object.filename, filehandler_object.csventries)
+
+#     csvencryptedlist = filehandler_object.encryptfiles()
+#     filehandler_object.prepare_file(filehandler_object.targetencryptfilename, csvencryptedlist)
+

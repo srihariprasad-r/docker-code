@@ -1,7 +1,7 @@
 {
   "files": [{
     "source_file_name": "customers.csv",
-    "target_file_name": "encrypted_customers_20230715.txt",
+    "target_file_name": "encrypted_customers_20230715.csv",
     "fields": {
         "ssn": {
             "algo": "TSE",
