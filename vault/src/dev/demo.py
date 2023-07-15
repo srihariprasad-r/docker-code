@@ -5,6 +5,26 @@ from dbc import DBClient
 import argparse
 import configparser
 
+customer_table = '''
+CREATE TABLE IF NOT EXISTS customers (
+    cust_no SERIAL PRIMARY KEY,
+    birth_date varchar(255) NOT NULL,
+    first_name varchar(255) NOT NULL,
+    last_name varchar(255) NOT NULL,
+    create_date varchar(255) NOT NULL,
+    social_security_number varchar(255) NOT NULL,
+    credit_card_number varchar(255) NOT NULL,
+    address varchar(255) NOT NULL,
+    salary varchar(255) NOT NULL
+)
+'''
+
+seed_customers = '''
+INSERT into customers (birth_date, first_name, last_name, create_date, social_security_number, credit_card_number, address, salary)
+     VALUES
+  ('2023-03-10', 'Larry', 'Johnson', '2020-01-01T14:49:12.301977', '360-56-6750', '3600-5600-6750-0000', 'Tyler, Texas', '7000000')
+'''
+
 class Demo(fileHandler, DBClient, hvacClient):
     def __init__(self, url='', token='', namespace='', **params):
         hvacClient.__init__(self,url, token, namespace)
@@ -54,7 +74,7 @@ if __name__ == '__main__':
             dbc.prepare_file(dbc.filename, dbc.csventries)
         if args.apply and args.apply == 'encrypt':
             # encrypt values
-            csvencryptedlist = dbc.encryptfiles()
+            csvencryptedlist = dbc.encryptfiles(conf)
             # rewrite encrypted fields to new file
             dbc.prepare_file(dbc.targetencryptfilename, csvencryptedlist)
             # remove old file
@@ -67,13 +87,12 @@ if __name__ == '__main__':
             'table': conf['DATABASE']['TABLE']
         }
         dbc = Demo(url=conf['VAULT']['Address'], token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'], **params)
-        # prepare csv file for encryption
         conn = dbc.pgsql_connection(client = dbc.client)
         if not args.apply:
-            dbc.executeSQL(dbc.customer_table, conn)
-            dbc.executeSQL(dbc.seed_customers, conn)
+            dbc.executeSQL(customer_table, conn)
+            dbc.executeSQL(seed_customers, conn)
         if args.apply and args.apply == 'encrypt':
-            rows = dbc.get_table_rows(table='customers')
+            rows = dbc.get_table_rows(conf=conf,table='customers')
             for row in rows:
                 stmt = dbc.insert_statement(row, conf)
                 dbc.executeSQL(stmt, conn)

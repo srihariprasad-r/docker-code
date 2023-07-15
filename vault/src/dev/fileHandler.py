@@ -1,9 +1,9 @@
 import os, csv
 from prepareCustomfiles import preparefiles
-import argparse
+from app import hvacClient
 import json
 
-class fileHandler(preparefiles):
+class fileHandler(preparefiles, hvacClient):
     def __init__(self, hdfs_connection='', aws_connection='', **params):
         self.filepath = params['filepath']
         self.filetype = params['filetype']
@@ -32,7 +32,7 @@ class fileHandler(preparefiles):
 
         return encrypted_fields_list
     
-    def encryptfiles(self):
+    def encryptfiles(self, conf):
         fields = self.parse_config_fields('fileconfig.json')
         if self.file_type == 'csv':
             with open(os.path.join(self.filepath, self.filename), 'r', newline='') as file:
@@ -41,6 +41,8 @@ class fileHandler(preparefiles):
                 for row in reader:
                     col_vals = []
                     for k , v in row.items():
+                        if k in fields:
+                            v = super(fileHandler, self)._encrypt_non_ssn_ccn(v, conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
                         col_vals.append(v)
                     self.csvencryptedentries.append(col_vals)
 
@@ -48,18 +50,4 @@ class fileHandler(preparefiles):
     
     def removefile(self, filepath, filename):
         os.remove(os.path.join(filepath, filename))
-
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('--filetype', type=str, required=True)
-#     parser.add_argument('--filepath', type=str, required=True)
-#     parser.add_argument('--csvdelimiter', type=str)
-#     args = parser.parse_args()
-
-#     filehandler_object = fileHandler(args.filepath, args.filetype, args.csvdelimiter)
-#     filehandler_object.prepare_file(filehandler_object.filename, filehandler_object.csventries)
-
-#     csvencryptedlist = filehandler_object.encryptfiles()
-#     filehandler_object.prepare_file(filehandler_object.targetencryptfilename, csvencryptedlist)
 
