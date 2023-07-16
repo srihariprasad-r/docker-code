@@ -71,12 +71,19 @@ if __name__ == '__main__':
         dbc = Demo(url=conf['VAULT']['Address'], token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'], **params)
         if not args.apply:
             # prepare csv file for encryption
-            dbc.prepare_file(dbc.filename, dbc.csventries)
+            if args.filetype == 'csv':
+                dbc.prepare_file(dbc.filename, dbc.csventries)
+            if args.filetype == 'json':
+                dbc.prepare_file(dbc.filename)
         if args.apply and args.apply == 'encrypt':
+            flag = True
             # encrypt values
-            csvencryptedlist = dbc.encryptfiles(conf)
+            encryptedlist = dbc.encryptfiles(conf)
             # rewrite encrypted fields to new file
-            dbc.prepare_file(dbc.targetencryptfilename, csvencryptedlist)
+            if args.filetype == 'csv':
+                dbc.prepare_file(dbc.targetencryptfilename, encryptedlist)
+            if args.filetype == 'json':
+                dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist, flag = flag)
             # remove old file
             dbc.removefile(dbc.file_path, dbc.filename)
     # table encryption

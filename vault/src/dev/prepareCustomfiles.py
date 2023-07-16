@@ -1,5 +1,6 @@
 import csv
 import os
+import json
 
 class preparefiles(object):
   def __init__(self,filepath='', file_type='csv', delimit=','):
@@ -27,6 +28,8 @@ class preparefiles(object):
               [ '9', '2023-03-19', 'Richard',  'David',  '2014-01-01T14:49:12.301977',
                 '870-06-6650', '7799-6630-6750-9732',  'NY, NY', '875200']
               ]
+    self.jsonschema = self.csventries[0]
+    self.jsonentries = self.csventries[1:]  
 
   def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
@@ -35,3 +38,16 @@ class preparefiles(object):
         writer = csv.writer(file, delimiter=self.delimit)
         # writer.writeheader()
         writer.writerows(csventries)
+
+  def prepare_json_file(self, filename, schema='', entries=''):
+    if not os.path.exists(self.file_path):
+       os.makedirs(self.file_path)
+    if entries and schema:
+      output = []
+      for val in entries:
+        tmp = {}
+        for i in range(len(val)):
+          tmp[schema[i]] = val[i]
+        output.append(tmp)
+    with open(os.path.join(self.file_path , filename), 'w', newline='') as file:
+      json.dump(output if schema and entries else entries, file)
