@@ -72,18 +72,22 @@ if __name__ == '__main__':
         if not args.apply:
             # prepare csv file for encryption
             if args.filetype == 'csv':
-                dbc.prepare_file(dbc.filename, dbc.csventries)
+                dbc.prepare_file(dbc.filename, entries=dbc.csventries)
             if args.filetype == 'json':
                 dbc.prepare_file(dbc.filename)
+            if args.filetype == 'parquet':
+                dbc.prepare_file(dbc.filename, entries=dbc.csventries)
         if args.apply and args.apply == 'encrypt':
             flag = True
             # encrypt values
             encryptedlist = dbc.encryptfiles(conf)
             # rewrite encrypted fields to new file
             if args.filetype == 'csv':
-                dbc.prepare_file(dbc.targetencryptfilename, encryptedlist)
+                dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist)
             if args.filetype == 'json':
                 dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist, flag = flag)
+            if args.filetype == 'parquet':
+                dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
             # remove old file
             dbc.removefile(dbc.file_path, dbc.filename)
     # table encryption

@@ -2,25 +2,30 @@ import os, csv
 from prepareCustomfiles import preparefiles
 from app import hvacClient
 import json
+import pandas as pd
+import fastparquet
 
 class fileHandler(preparefiles, hvacClient):
     def __init__(self, hdfs_connection='', aws_connection='', **params):
         self.filepath = params['filepath']
         self.filetype = params['filetype']
         self.delimited = params['csvdelimiter']
-        self.filename = 'customers.csv' if self.filetype == 'csv' else 'jsoncustomers.json'
+        self.filename = 'customers.csv' if self.filetype in ('csv', 'parquet') else 'jsoncustomers.json'
         self.targetencryptfilename = None
         self.csvencryptedentries = []
         super(fileHandler, self).__init__(self.filepath, self.filetype, self.delimited)
         
-    def prepare_file(self, filename='', entries='', flag=False):
+    def prepare_file(self, filename='', entries='', df='', flag=False):
         if self.file_type == 'csv':
-            return self.prepare_csv_file(filename, entries)
+            return self.prepare_csv_file(filename=filename, csventries=entries)
         if self.file_type == 'json':
             if not flag:
-                return self.prepare_json_file(filename, self.jsonschema, self.jsonentries)
+                return self.prepare_json_file(filename=filename, schema=self.jsonschema, entries=self.jsonentries)
             else:
-                return self.prepare_json_file(filename, entries=entries)
+                return self.prepare_json_file(filename=filename, entries=entries)
+        if self.file_type == 'parquet':
+            self.prepare_csv_file(filename=filename, csventries=entries)
+            return self.prepare_parquet_file(filename=filename, df=df)
     
     def parse_config_fields(self, file):
         with open(file, 'r') as f:
@@ -70,6 +75,17 @@ class fileHandler(preparefiles, hvacClient):
                 output.append(tmp)
             
             return output
+        # parquet processing
+        if self.file_type == 'parquet':
+            self.filename = 'data.parquet'
+            cols = ['Sno', 'birth_date', 'first_name', 'last_name','created_date', 'ssn', 'credit_card_number', 'address', 'salary']
+            df = pd.read_parquet(path=os.path.join(self.file_path, self.filename), columns=cols)
+            for row in df:
+                if row in fields:
+                    for i in range(len(df[row])):
+                        df[row][i] = super(fileHandler, self)._encrypt_non_ssn_ccn(str(df[row][i]), conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+            
+            return df
         
     def removefile(self, filepath, filename):
         os.remove(os.path.join(filepath, filename))

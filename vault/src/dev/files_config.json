@@ -50,6 +50,32 @@
             "template": "SSN"
         }
     }
+ },
+ {
+    "source_file_name": "data.parquet",
+    "target_file_name": "encrypted_data.parquet",
+    "fields": {
+        "ssn": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "birth_date": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "credit_card_number": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "address": {
+            "algo": "TSE",
+            "template": "SSN"
+        },
+        "salary": {
+            "algo": "TSE",
+            "template": "SSN"
+        }
+    }
  }
 ]
 }

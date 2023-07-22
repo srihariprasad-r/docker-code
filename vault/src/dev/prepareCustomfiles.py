@@ -1,6 +1,8 @@
 import csv
 import os
 import json
+import pandas as pd
+import fastparquet
 
 class preparefiles(object):
   def __init__(self,filepath='', file_type='csv', delimit=','):
@@ -35,7 +37,7 @@ class preparefiles(object):
     if not os.path.exists(self.file_path):
        os.makedirs(self.file_path)
     with open(os.path.join(self.file_path , filename), 'w', newline='') as file:
-        writer = csv.writer(file, delimiter=self.delimit)
+        writer = csv.writer(file, delimiter=self.delimit if self.delimit else ',')
         # writer.writeheader()
         writer.writerows(csventries)
 
@@ -51,3 +53,21 @@ class preparefiles(object):
         output.append(tmp)
     with open(os.path.join(self.file_path , filename), 'w', newline='') as file:
       json.dump(output if schema and entries else entries, file)
+
+  def prepare_parquet_file(self, filename, df=''):
+    if not os.path.exists(self.file_path):
+       os.makedirs(self.file_path)
+    if len(df) == 0:
+      pd.read_csv(os.path.join(self.file_path, filename)).to_parquet(os.path.join(self.file_path, 'data.parquet'))
+      csv_df = pd.read_parquet(os.path.join(self.file_path, 'data.parquet'))
+      print('******* sample contents from parquet file *******')
+      print(csv_df.head())
+      print('******* *******')
+    if len(df) > 0:
+      filename = 'encrypted_data.parquet'
+      df.to_parquet(os.path.join(self.file_path, filename))
+      print('******* sample contents from encrypted parquet file *******')
+      p_df = pd.read_parquet(os.path.join(self.file_path, filename))
+      for row in p_df:
+        print(p_df[row])
+      print('******* *******')
