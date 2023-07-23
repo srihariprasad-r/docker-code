@@ -3,6 +3,11 @@ import os
 import json
 import pandas as pd
 import fastparquet
+import avro.io
+from collections import namedtuple
+from fastavro import parse_schema, writer
+from avro.datafile import DataFileReader, DataFileWriter
+from avro.io import DatumReader, DatumWriter
 
 class preparefiles(object):
   def __init__(self,filepath='', file_type='csv', delimit=','):
@@ -32,6 +37,24 @@ class preparefiles(object):
               ]
     self.jsonschema = self.csventries[0]
     self.jsonentries = self.csventries[1:]  
+    self.avroschema = """
+      {
+        "namespace": "data_avro.avro",
+        "type": "record",
+        "name": "data_avro",
+        "fields": [
+            {"name": "Sno", "type": "string"},
+            {"name": "birth_date", "type": "string"},
+            {"name": "first_name", "type": "string"},
+            {"name": "last_name", "type": "string"},
+            {"name": "created_date", "type": "string"},
+            {"name": "ssn", "type": "string"},
+            {"name": "credit_card_number", "type": "string"},
+            {"name": "address", "type": "string"},
+            {"name": "salary", "type": "string"}
+          ]
+      }
+      """
 
   def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
@@ -71,3 +94,34 @@ class preparefiles(object):
       for row in p_df:
         print(p_df[row])
       print('******* *******')
+
+  def prepare_avro_file(self, filename, df=''):
+    if not os.path.exists(self.file_path):
+       os.makedirs(self.file_path)
+    if len(df) == 0:
+      fields = ('Sno', 'birth_date', 'first_name', 'last_name', 'created_date', 'ssn', 'credit_card_number', 'address', 'salary')
+      schemaRecord = namedtuple('schemaRecord', fields)
+      parsed_schema = parse_schema(json.loads(self.avroschema))
+
+      lst = []
+
+      with open(os.path.join(self.file_path, filename), 'r') as file:
+        file.readline()
+        reader = csv.reader(file, delimiter=self.delimit if self.delimit else ',')
+        for records in map(schemaRecord._make, reader):
+          record = dict((f, getattr(records, f)) for f in records._fields)
+          lst.append(record)
+
+      with open(os.path.join(self.file_path, 'data.avro'), "wb") as fp:
+        writer(fp, json.loads(self.avroschema), lst)
+    
+    if df:
+      with open(os.path.join(self.file_path, 'encrypted_data.avro'), 'wb') as wp:
+        writer(wp, json.loads(self.avroschema), df)
+      # print('******* sample contents from encrypted avro file *******')
+      # p_df = DataFileReader(open("enrypted_data.avro", "rb"), DatumReader())
+      # for row in p_df:
+      #   print(row)
+      # print('******* *******')
+      for row in df:
+        print(row)

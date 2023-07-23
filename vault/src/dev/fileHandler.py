@@ -4,13 +4,16 @@ from app import hvacClient
 import json
 import pandas as pd
 import fastparquet
+import avro.io
+from avro.datafile import DataFileReader
+from avro.io import DatumReader
 
 class fileHandler(preparefiles, hvacClient):
     def __init__(self, hdfs_connection='', aws_connection='', **params):
         self.filepath = params['filepath']
         self.filetype = params['filetype']
         self.delimited = params['csvdelimiter']
-        self.filename = 'customers.csv' if self.filetype in ('csv', 'parquet') else 'jsoncustomers.json'
+        self.filename = 'customers.csv' if self.filetype in ('csv', 'parquet', 'avro') else 'jsoncustomers.json'
         self.targetencryptfilename = None
         self.csvencryptedentries = []
         super(fileHandler, self).__init__(self.filepath, self.filetype, self.delimited)
@@ -24,8 +27,13 @@ class fileHandler(preparefiles, hvacClient):
             else:
                 return self.prepare_json_file(filename=filename, entries=entries)
         if self.file_type == 'parquet':
+            # uses csv as input, so prepare csv before conversion
             self.prepare_csv_file(filename=filename, csventries=entries)
             return self.prepare_parquet_file(filename=filename, df=df)
+        if self.file_type == 'avro':
+            # uses csv as input, so prepare csv before conversion
+            self.prepare_csv_file(filename=filename, csventries=entries)
+            return self.prepare_avro_file(filename=filename, df=df)
     
     def parse_config_fields(self, file):
         with open(file, 'r') as f:
@@ -77,6 +85,7 @@ class fileHandler(preparefiles, hvacClient):
             return output
         # parquet processing
         if self.file_type == 'parquet':
+            self.csvfile = self.filename
             self.filename = 'data.parquet'
             cols = ['Sno', 'birth_date', 'first_name', 'last_name','created_date', 'ssn', 'credit_card_number', 'address', 'salary']
             df = pd.read_parquet(path=os.path.join(self.file_path, self.filename), columns=cols)
@@ -86,6 +95,19 @@ class fileHandler(preparefiles, hvacClient):
                         df[row][i] = super(fileHandler, self)._encrypt_non_ssn_ccn(str(df[row][i]), conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
             
             return df
+        # avro processing
+        if self.file_type == 'avro':
+            self.csvfile = self.filename
+            self.filename = 'data.avro'
+            reader = DataFileReader(open(os.path.join(self.file_path, self.filename), 'rb'), DatumReader())
+            tmp = []
+            for row in reader:
+                for a, b in row.items():
+                    if a in fields:
+                        row[a] = super(fileHandler, self)._encrypt_non_ssn_ccn(str(b), conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
+                tmp.append(row)
+
+            return tmp
         
     def removefile(self, filepath, filename):
         os.remove(os.path.join(filepath, filename))

@@ -77,6 +77,8 @@ if __name__ == '__main__':
                 dbc.prepare_file(dbc.filename)
             if args.filetype == 'parquet':
                 dbc.prepare_file(dbc.filename, entries=dbc.csventries)
+            if args.filetype == 'avro':
+                dbc.prepare_file(dbc.filename, entries=dbc.csventries)
         if args.apply and args.apply == 'encrypt':
             flag = True
             # encrypt values
@@ -88,6 +90,12 @@ if __name__ == '__main__':
                 dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist, flag = flag)
             if args.filetype == 'parquet':
                 dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
+                # removes csv which was prepared first
+                dbc.removefile(dbc.file_path, dbc.csvfile)
+            if args.filetype == 'avro':
+                dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
+                # removes csv which was prepared first
+                dbc.removefile(dbc.file_path, dbc.csvfile)
             # remove old file
             dbc.removefile(dbc.file_path, dbc.filename)
     # table encryption
