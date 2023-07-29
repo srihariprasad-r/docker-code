@@ -5,34 +5,14 @@
 - Python 3.7+
 - VS Code (recommended)
 
-## Pull and run a vault image through docker compose and add to network
+## Pull and run a vault/python/postgres images through docker compose and add to network
 
-Open a terminal to execute vault image, this will be interative image
-
-```sh
-cd src/dev/
-sh start_vault.sh 
-
-# Once you see dev server is running, open a terminal to copy files into above container
-sh copy_vault.sh
-
-```
-## Build python image through docker compose and add to network
-
-Open VSCode(IDE) Terminal, (3 terminals may be needed)
+Open a terminal to execute docker commands
 
 ```sh
-cd src/dev/
-docker build -t vault-app .
-```
+cd vault/
+sh bootup-script.sh 
 
-## Pull postgres image through docker compose and add to network
-
-```sh
-cd ../../
-docker-compose up -d db
-# once above command is complete,  proceed executing below command
-# docker-compose up -d app
 ```
 
 ## Vault container 
@@ -43,10 +23,6 @@ Open another terminal,
 # running python image manually instead of docker-compose as python container exits upon start
 docker ps # check container-id for running containers
 docker exec -it <vault-image-container#> /bin/sh
-# to execute vault API's, we need below env variables
-$ export VAULT_ADDR=http://localhost:8200
-$ export VAULT_TOKEN=root
-$ export VAULT_NAMESPACE=dev
 # check status of vault
 $ vault status
 # you should see something as below
@@ -134,9 +110,50 @@ $ ls
 ```sh
 # assuming you are in python container
 $ ls
-$ python dbc.py
-# check if status is complete
-#
+# Table encryption
+$ python demo.py --type table
+# go back to postgres container
+# check if status is complete and do below, there will be one seed record
+# postgres=# select * from customers;
+# in python container, run below to proceed encryption
+$ python demo.py --type table --apply encrypt
+# next is decryption, this will display rows which were encrypted in above step with actual PII values
+$ python demo.py --type table --apply decrypt
+
+# File encryption - supports CSV, Avro, JSON, Parquet
+
+# CSV file encrytion
+# --csvdelimiter is optional, if not provided, ',' will be delimiter
+$ python demo.py --type file --filetype csv --filepath /src/files # [--csvdelimiter ',']
+$ cd /src/files
+# you should see csv file
+$ cd ../dev
+$ python demo.py --type file --filetype csv --filepath /src/files --apply encrypt
+# you should see encrypted_xxx.csv file in /src/files
+
+# JSON file encrytion
+$ python demo.py --type file --filetype json --filepath /src/files
+$ cd /src/files
+# you should see json file
+$ cd ../dev
+$ python demo.py --type file --filetype json --filepath /src/files --apply encrypt
+# you should see encrypted_xxx.json file in /src/files
+
+# Avro file encrytion
+$ python demo.py --type file --filetype avro --filepath /src/files
+$ cd /src/files
+# you should see avro file
+$ cd ../dev
+$ python demo.py --type file --filetype avro --filepath /src/files --apply encrypt
+# you should see encrypted_xxx.avro file in /src/files
+
+# Parquet file encrytion
+$ python demo.py --type file --filetype parquet --filepath /src/files
+$ cd /src/files
+# you should see parquet file
+$ cd ../dev
+$ python demo.py --type file --filetype parquet --filepath /src/files --apply encrypt
+# you should see encrypted_xxx.parquet file in /src/files
 ```
 
 ## Postgres container 

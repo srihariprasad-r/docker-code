@@ -5,5 +5,4 @@ docker image rm vault-app --force
 cd ./src/dev
 docker build -t vault-app .
 cd ././
-echo $pwd
 docker-compose up -d db
