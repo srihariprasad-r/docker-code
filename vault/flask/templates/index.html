@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <h1> PII security framework </h1>
+        <link rel="stylesheet" href="./static/style.css" />
+    </head>
+    <body>
+        <form>
+            <div class="form__fieldset">
+                <label for="otype" class="form__label">Type of object to be encrypted : </label>
+                <select name="otype" id="otype" class="form__input form__select">
+                    <option value="table">table</option>
+                    <option value="file">file</option>
+                </select>
+            </div>
+
+            <div class="form__fieldset">
+                <label for="filetype" class="form__label">Choose filetype : </label>
+                <select name="filetype" id="filetype" class="form__input form__select">
+                    <option value="csv">csv</option>
+                    <option value="Avro">avro</option>
+                    <option value="Json">json</option>
+                    <option value="Parquet">parquet</option>
+                </select>
+            </div>
+
+            <div class="form__fieldset">
+                <!-- <input style='margin-right:16px' class="form__submit form__input" type="submit" name="decrypt" value="Decrypt" /> -->
+                <input style='margin-right:16px' class="form__submit form__input" name="submit" type="encrypt" value="Encrypt" />
+            </div>
+
+        </form>
+    </body>
+</html>
