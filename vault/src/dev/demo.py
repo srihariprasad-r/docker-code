@@ -1,5 +1,5 @@
 import sys
-from app import hvacClient
+from vaultClass import hvacClient
 from fileHandler import fileHandler
 from dbc import DBClient
 import argparse

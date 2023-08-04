@@ -4,3 +4,5 @@ pandas
 fastparquet
 fastavro
 avro
+flask 
+flask_restful

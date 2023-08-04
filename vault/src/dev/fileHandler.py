@@ -1,14 +1,14 @@
 import os, csv
 from prepareCustomfiles import preparefiles
-from app import hvacClient
+from vaultClass import hvacClient
 import json
 import pandas as pd
-import fastparquet
+# import fastparquet
 import avro.io
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
 
-class fileHandler(preparefiles, hvacClient):
+class fileHandler(preparefiles):
     def __init__(self, hdfs_connection='', aws_connection='', **params):
         self.filepath = params['filepath']
         self.filetype = params['filetype']
@@ -52,7 +52,8 @@ class fileHandler(preparefiles, hvacClient):
         return encrypted_fields_list
     
     def encryptfiles(self, conf):
-        fields = self.parse_config_fields('fileconfig.json')
+        import vaultClass
+        fields = self.parse_config_fields(os.path.join('/src/dev', 'fileconfig.json'))
         # csv processing
         if self.file_type == 'csv':
             with open(os.path.join(self.filepath, self.filename), 'r', newline='') as file:

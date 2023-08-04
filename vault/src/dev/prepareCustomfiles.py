@@ -2,7 +2,7 @@ import csv
 import os
 import json
 import pandas as pd
-import fastparquet
+# import fastparquet
 import avro.io
 from collections import namedtuple
 from fastavro import parse_schema, writer
@@ -56,6 +56,23 @@ class preparefiles(object):
       }
       """
 
+  def read_csv_file_to_html(self,filename, delimiter=','):
+      with open(os.path.join(self.filepath, filename), 'r', newline='') as f:
+        content = f.readlines()
+      #reading file content into list
+      # content = [line for line in content]
+      rows = [x for x in content]
+      table = """<table align="left" border="1" cellpadding="3" cellspacing="3">\n<thead>\n"""
+      table += "".join(["<th>"+cell+"</th>" for cell in self.jsonschema])
+      table += "</thead>\n"
+      table += "<tbody>\n"
+      #Converting csv to html row by row
+      for row in rows[1:]:
+        table+= "<tr>" + "".join(["<td>" + cell if cell.find(',') == -1 else '-'.join(cell.split(',')) + "</td>\n" for cell in row.split(',')]) + "</tr>" + "\n"
+      table += "</tbody>\n"
+      table+="</table><br>"
+      return table
+
   def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
        os.makedirs(self.file_path)
@@ -63,6 +80,7 @@ class preparefiles(object):
         writer = csv.writer(file, delimiter=self.delimit if self.delimit else ',')
         # writer.writeheader()
         writer.writerows(csventries)
+    return self.read_csv_file_to_html(filename,delimiter=self.delimit if self.delimit else ',')
 
   def prepare_json_file(self, filename, schema='', entries=''):
     if not os.path.exists(self.file_path):

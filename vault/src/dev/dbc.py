@@ -1,5 +1,5 @@
 import psycopg2
-from app import hvacClient
+from vaultClass import hvacClient
 import configparser
 
 class DBClient(hvacClient):
