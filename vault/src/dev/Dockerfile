@@ -18,5 +18,6 @@ RUN mkdir -p /src/dev/flask
 COPY ./flask/static/ ./flask/static
 COPY ./flask/template/ ./flask/templates
 COPY ./flask/app.py ./flask/app.py
+COPY ./config.ini ./flask/config.ini
 ENV FLASK_APP=/src/dev/flask/app.py
 CMD [ "flask", "run", "--host=0.0.0.0"]
