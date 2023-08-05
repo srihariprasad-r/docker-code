@@ -46,7 +46,10 @@ def prepare(filetype=None):
     res = None
     if 'filetype' in params: 
         fh = fileHandler(**params)
-        res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
+        if filetype == 'csv':
+            res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
+        if filetype == 'parquet':
+            res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
 
     return render_template('index.html', out=res)
 
@@ -69,9 +72,14 @@ def encryptfunc():
     if 'host' in params: db = DBClient(**params)
     dbc = Demo(url=conf['VAULT']['Address'], token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'], **params)
     encr_res = None
-    if 'filetype' in session and session['filetype'] == 'csv':
-        encryptedlist = dbc.encryptfiles(conf)
-        encr_res = dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist)
+    if 'filetype' in session :
+        if session['filetype'] == 'csv':
+            encryptedlist = dbc.encryptfiles(conf)
+            encr_res = dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist)
+        if session['filetype'] == 'parquet':
+            encryptedlist = dbc.encryptfiles(conf)
+            encr_res = dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
+            dbc.removefile(dbc.file_path, dbc.csvfile)
 
     return render_template('index.html', enc_out=encr_res)
 

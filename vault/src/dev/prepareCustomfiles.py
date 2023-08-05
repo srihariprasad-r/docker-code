@@ -73,6 +73,17 @@ class preparefiles(object):
       table+="</table><br>"
       return table
 
+  def read_parquet_file_to_html(self,filename):
+      cols = ['Sno', 'birth_date', 'first_name', 'last_name','created_date', 'ssn', 'credit_card_number', 'address', 'salary']
+      df = pd.read_parquet(path=os.path.join(self.file_path, filename), columns=cols)
+      pd.set_option('colheader_justify', 'center')
+      html_string = '''
+        <body>
+          {table}
+        </body>
+      '''
+      return html_string.format(table=df.to_html(classes='pandas'))
+
   def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
        os.makedirs(self.file_path)
@@ -100,18 +111,20 @@ class preparefiles(object):
        os.makedirs(self.file_path)
     if len(df) == 0:
       pd.read_csv(os.path.join(self.file_path, filename)).to_parquet(os.path.join(self.file_path, 'data.parquet'))
-      csv_df = pd.read_parquet(os.path.join(self.file_path, 'data.parquet'))
-      print('******* sample contents from parquet file *******')
-      print(csv_df.head())
-      print('******* *******')
+      return self.read_parquet_file_to_html('data.parquet')
+      # csv_df = pd.read_parquet(os.path.join(self.file_path, 'data.parquet'))
+      # print('******* sample contents from parquet file *******')
+      # print(csv_df.head())
+      # print('******* *******')
     if len(df) > 0:
       filename = 'encrypted_data.parquet'
       df.to_parquet(os.path.join(self.file_path, filename))
-      print('******* sample contents from encrypted parquet file *******')
-      p_df = pd.read_parquet(os.path.join(self.file_path, filename))
-      for row in p_df:
-        print(p_df[row])
-      print('******* *******')
+      # print('******* sample contents from encrypted parquet file *******')
+      # p_df = pd.read_parquet(os.path.join(self.file_path, filename))
+      return self.read_parquet_file_to_html(filename)
+      # for row in p_df:
+      #   print(p_df[row])
+      # print('******* *******')
 
   def prepare_avro_file(self, filename, df=''):
     if not os.path.exists(self.file_path):
