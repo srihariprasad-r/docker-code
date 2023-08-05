@@ -105,6 +105,8 @@ class preparefiles(object):
         output.append(tmp)
     with open(os.path.join(self.file_path , filename), 'w', newline='') as file:
       json.dump(output if schema and entries else entries, file)
+    
+    return json.dumps(output if schema and entries else entries)
 
   def prepare_parquet_file(self, filename, df=''):
     if not os.path.exists(self.file_path):

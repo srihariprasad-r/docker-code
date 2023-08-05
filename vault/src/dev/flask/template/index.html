@@ -62,12 +62,26 @@
                     <option value="parquet">parquet</option>
                 </select>
             </div>
-            {{ out | safe}}
+            {% if out is defined %}
+                {{ out | safe }}
+            {% endif %}
+            {% if json_in is defined %}
+                {% for key in json_in %}
+                    <pre> {{ key }} </pre>
+                {% endfor %}
+            {% endif %}
             <br>
             <div class="form__fieldset">
                 <button class="form__submit" name="encrypt" type="button" value="Encrypt" onclick="encryptURL()">Encrypt</button> 
             </div>
-            {{ enc_out | safe}}
+            {% if enc_out is defined %}
+                {{ enc_out | safe }}
+            {% endif %}
+            {% if json_out is defined %}
+                {% for key in json_out %}
+                    <pre> {{ key }} </pre>
+                {% endfor %}
+            {% endif %}
             <br>
         </form>
     </body>

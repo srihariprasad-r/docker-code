@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session
 from flask_restful import Api, Resource
 import os
 import sys
+import json
 from datetime import timedelta
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from demo import Demo
@@ -48,6 +49,10 @@ def prepare(filetype=None):
         fh = fileHandler(**params)
         if filetype == 'csv':
             res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
+        if filetype == 'json':
+            res = dbc.prepare_file(fh.filename)
+            res = json.loads(res)
+            return render_template('index.html', json_in=res)
         if filetype == 'parquet':
             res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
 
@@ -73,15 +78,18 @@ def encryptfunc():
     dbc = Demo(url=conf['VAULT']['Address'], token=conf['VAULT']['Token'], namespace=conf['VAULT']['Namespace'], **params)
     encr_res = None
     if 'filetype' in session :
+        flag = True
+        encryptedlist = dbc.encryptfiles(conf)
         if session['filetype'] == 'csv':
-            encryptedlist = dbc.encryptfiles(conf)
             encr_res = dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist)
+        if session['filetype'] == 'json':
+            encr_res = dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist, flag = flag)
+            return render_template('index.html', json_out=json.loads(encr_res))
         if session['filetype'] == 'parquet':
-            encryptedlist = dbc.encryptfiles(conf)
             encr_res = dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
             dbc.removefile(dbc.file_path, dbc.csvfile)
 
-    return render_template('index.html', enc_out=encr_res)
+        return render_template('index.html', enc_out=encr_res)
 
 
 if __name__ == '__main__':

@@ -44,6 +44,11 @@ body {
     color: white;
 }
 
+pre {
+    white-space: pre-wrap;
+    tab-size: 4;
+}
+
 .pandas {
     font-size: 11pt;
     font-family: Arial;
