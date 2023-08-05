@@ -5,7 +5,7 @@ import pandas as pd
 # import fastparquet
 import avro.io
 from collections import namedtuple
-from fastavro import parse_schema, writer
+from fastavro import parse_schema, writer, reader
 from avro.datafile import DataFileReader, DataFileWriter
 from avro.io import DatumReader, DatumWriter
 
@@ -83,6 +83,23 @@ class preparefiles(object):
         </body>
       '''
       return html_string.format(table=df.to_html(classes='pandas'))
+  
+  def read_avro_file_to_html(self,filename):
+    avro_records = []
+    with open(os.path.join(self.file_path, filename), 'rb') as fo:
+      avro_reader = reader(fo)
+      for record in avro_reader:
+        avro_records.append(record)
+
+    df_avro = pd.DataFrame(avro_records)
+
+    pd.set_option('colheader_justify', 'center')
+    html_string = '''
+        <body>
+          {table}
+        </body>
+    '''
+    return html_string.format(table=df_avro.to_html(classes='pandas'))
 
   def prepare_csv_file(self, filename, csventries):
     if not os.path.exists(self.file_path):
@@ -147,6 +164,8 @@ class preparefiles(object):
 
       with open(os.path.join(self.file_path, 'data.avro'), "wb") as fp:
         writer(fp, json.loads(self.avroschema), lst)
+      
+      return self.read_avro_file_to_html('data.avro')
     
     if df:
       with open(os.path.join(self.file_path, 'encrypted_data.avro'), 'wb') as wp:
@@ -156,5 +175,4 @@ class preparefiles(object):
       # for row in p_df:
       #   print(row)
       # print('******* *******')
-      for row in df:
-        print(row)
+      return self.read_avro_file_to_html('encrypted_data.avro')

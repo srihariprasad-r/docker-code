@@ -53,7 +53,7 @@ def prepare(filetype=None):
             res = dbc.prepare_file(fh.filename)
             res = json.loads(res)
             return render_template('index.html', json_in=res)
-        if filetype == 'parquet':
+        if filetype in ('parquet', 'avro'):
             res = dbc.prepare_file(fh.filename, entries=dbc.csventries)
 
     return render_template('index.html', out=res)
@@ -85,7 +85,7 @@ def encryptfunc():
         if session['filetype'] == 'json':
             encr_res = dbc.prepare_file(dbc.targetencryptfilename, entries=encryptedlist, flag = flag)
             return render_template('index.html', json_out=json.loads(encr_res))
-        if session['filetype'] == 'parquet':
+        if session['filetype'] in ('parquet', 'avro'):
             encr_res = dbc.prepare_file(dbc.targetencryptfilename, df=encryptedlist)
             dbc.removefile(dbc.file_path, dbc.csvfile)
 
