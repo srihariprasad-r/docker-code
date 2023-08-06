@@ -21,7 +21,7 @@ Open another terminal,
 
 ```sh
 # running python image manually instead of docker-compose as python container exits upon start
-docker ps # check container-id for running containers
+$ docker ps # check container-id for running containers
 $ docker exec vault-demo /bin/sh -c './vault/database-setup.sh'
 $ docker exec vault-demo /bin/sh -c './vault/transit-secret-engine.sh'
 $ docker exec vault-demo /bin/sh
@@ -69,21 +69,16 @@ $ docker exec -it <container-id> psql -U postgres
 # postgres=# \d
 ```
 
-## Python container
+## Python container(CLI/API)
 
 Open VSCode terminal
 
 ```sh
 $ cd ../vault
 $ docker run --name vault_app_1 --network vault_dev-network --port 5000:5000 -it vault-app /bin/sh
-$ ls
+# NOTE: bootup-script will already be running container, if you need to get into that container, use below:
+# $ docker exec -it <container id> /bin/sh
 # you should see python files
-
-```
-
-## Python container 
-```sh
-# assuming you are in python container
 $ ls
 # Table encryption
 $ python demo.py --type table
@@ -129,6 +124,24 @@ $ cd /src/files
 $ cd ../dev
 $ python demo.py --type file --filetype parquet --filepath /src/files --apply encrypt
 # you should see encrypted_xxx.parquet file in /src/files
+
+# if you still need to access API commands using flask
+$ cd flask
+$ flask run --host='0.0.0.0' --port=5000
+# This will spin up flask API server in backend. To get localhost IP to access UI,
+# go to Docker Toolbox and run : docker-machine ip
+# Go to chrome: http://<docker-ip>:5000, UI screen to appear
+```
+
+## Python container for API commands
+```sh
+# assuming you are in python container
+$ docker run -d -p 5000:5000 --name vault_app_1 --network vault_dev-network  vault-app
+# NOTE: bootup-script will already be running container, if you need to get into that container, use below:
+# $ docker exec -it <container id> /bin/sh
+# This will spin up flask API server in backend. To get localhost IP to access UI,
+# go to Docker Toolbox and run : docker-machine ip
+# Go to chrome: http://<docker-ip>:5000, UI screen to appear
 ```
 
 ## Postgres container 
@@ -154,18 +167,18 @@ postgres=# select * from customers;
 
 ```sh
 CONTAINER ID        NAME                CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-35712dcddeeb        vault_app_1         0.00%               2.508MiB / 3.856GiB   0.06%               2.1kB / 154B        29MB / 0B           1   
-b6be9fa77770        vault-demo          1.57%               30.09MiB / 3.856GiB   0.76%               3.08kB / 1.74kB     247MB / 246MB       9   
-27518d035749        vault_db_1          0.00%               10.98MiB / 3.856GiB   0.28%               3.27kB / 1.94kB     7.93MB / 229kB      10
+ce414f2bb83b        vault_app_1         0.01%               55.27MiB / 3.856GiB   1.40%               34.4kB / 41.2kB     0B / 0B             1 
+cc417aee3e86        vault_db_1          0.00%               13.28MiB / 3.856GiB   0.34%               20.6kB / 16.6kB     16.1MB / 35.7MB     10
+7cb8c1824a25        vault-demo          0.39%               32.68MiB / 3.856GiB   0.83%               257kB / 322kB       248MB / 246MB       9
 ```
 
 # docker system df
 
 ```sh
-TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
-Images              12                  3                   2.951GB             2.253GB (76%)
-Containers          3                   3                   289.4MB             0B (0%)
-Local Volumes       220                 2                   43.4MB              43.4MB (100%)
+TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE  
+Images              12                  3                   3.128GB             2.253GB (72%)
+Containers          3                   3                   289.5MB             0B (0%)      
+Local Volumes       288                 2                   43.4MB              43.4MB (100%)
 Build Cache         0                   0                   0B                  0B
 ```
 

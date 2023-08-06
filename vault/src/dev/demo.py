@@ -114,10 +114,10 @@ if __name__ == '__main__':
             dbc.executeSQL(customer_table, conn)
             dbc.executeSQL(seed_customers, conn)
         if args.apply and args.apply == 'encrypt':
-            rows = dbc.get_table_rows(conf=conf,table='customers')
+            rows = dbc.get_table_rows(conf=conf,table='customers', conn=conn)
             for row in rows:
                 stmt = dbc.insert_statement(row, conf)
                 dbc.executeSQL(stmt, conn)
         if args.apply and args.apply == 'decrypt':
-            rows = dbc.get_table_rows(conf=conf, where=' WHERE cust_no=2', table='customers')
+            rows = dbc.get_table_rows(conf=conf, where=' WHERE cust_no=2', table='customers', conn=conn)
             print(rows)

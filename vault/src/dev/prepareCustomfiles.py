@@ -130,20 +130,20 @@ class preparefiles(object):
        os.makedirs(self.file_path)
     if len(df) == 0:
       pd.read_csv(os.path.join(self.file_path, filename)).to_parquet(os.path.join(self.file_path, 'data.parquet'))
+      csv_df = pd.read_parquet(os.path.join(self.file_path, 'data.parquet'))
+      print('******* sample contents from parquet file *******')
+      print(csv_df.head())
+      print('******* *******')
       return self.read_parquet_file_to_html('data.parquet')
-      # csv_df = pd.read_parquet(os.path.join(self.file_path, 'data.parquet'))
-      # print('******* sample contents from parquet file *******')
-      # print(csv_df.head())
-      # print('******* *******')
     if len(df) > 0:
       filename = 'encrypted_data.parquet'
       df.to_parquet(os.path.join(self.file_path, filename))
-      # print('******* sample contents from encrypted parquet file *******')
-      # p_df = pd.read_parquet(os.path.join(self.file_path, filename))
+      print('******* sample contents from encrypted parquet file *******')
+      p_df = pd.read_parquet(os.path.join(self.file_path, filename))
+      for row in p_df:
+        print(p_df[row])
+      print('******* *******')
       return self.read_parquet_file_to_html(filename)
-      # for row in p_df:
-      #   print(p_df[row])
-      # print('******* *******')
 
   def prepare_avro_file(self, filename, df=''):
     if not os.path.exists(self.file_path):
@@ -170,9 +170,9 @@ class preparefiles(object):
     if df:
       with open(os.path.join(self.file_path, 'encrypted_data.avro'), 'wb') as wp:
         writer(wp, json.loads(self.avroschema), df)
-      # print('******* sample contents from encrypted avro file *******')
-      # p_df = DataFileReader(open("enrypted_data.avro", "rb"), DatumReader())
-      # for row in p_df:
-      #   print(row)
-      # print('******* *******')
+      print('******* sample contents from encrypted avro file *******')
+      p_df = DataFileReader(open(os.path.join(self.file_path,"encrypted_data.avro"), "rb"), DatumReader())
+      for row in p_df:
+        print(row)
+      print('******* *******')
       return self.read_avro_file_to_html('encrypted_data.avro')
