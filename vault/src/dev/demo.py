@@ -32,8 +32,11 @@ class Demo(fileHandler, DBClient, hvacClient):
             if 'filetype' in params:
                 fileHandler.__init__(self,**params)
             if 'host' in params:
-                DBClient.__init__(self, **params)
+                DBClient.__init__(self, url, token, namespace,**params)
         self.client = self.get_vault_client()
+        self.customer_table = customer_table
+        self.seed_customers = seed_customers
+        self.customer_schema = ['birth_date', 'first_name', 'last_name', 'create_date', 'social_security_number', 'credit_card_number', 'address', 'salary']
 
     @staticmethod
     def get_config_entries():

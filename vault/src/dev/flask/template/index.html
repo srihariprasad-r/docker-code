@@ -62,9 +62,15 @@
                     <option value="parquet">parquet</option>
                 </select>
             </div>
+            {% if tbl_out is defined %}
+                <h3> Unencrypted postgres table data: </h3>
+                {{ tbl_out | safe }}
+            {% endif %}
             {% if out is defined %}
+                <h3> Unencrypted csv/parquet/avro data: </h3>
                 {{ out | safe }}
             {% endif %}
+            <h3> Unencrypted json data: </h3>
             {% if json_in is defined %}
                 {% for key in json_in %}
                     <pre> {{ key }} </pre>
@@ -74,9 +80,15 @@
             <div class="form__fieldset">
                 <button class="form__submit" name="encrypt" type="button" value="Encrypt" onclick="encryptURL()">Encrypt</button> 
             </div>
+            {% if encr_tbl_out is defined %}
+                <h3> Encrypted postgres table data: </h3>
+            {{ encr_tbl_out | safe }}
+            {% endif %}
             {% if enc_out is defined %}
+                <h3> Encrypted csv/parquet/avro data: </h3>
                 {{ enc_out | safe }}
             {% endif %}
+            <h3> Encrypted json data: </h3>
             {% if json_out is defined %}
                 {% for key in json_out %}
                     <pre> {{ key }} </pre>

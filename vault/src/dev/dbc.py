@@ -3,10 +3,12 @@ from vaultClass import hvacClient
 import configparser
 
 class DBClient(hvacClient):
-    def __init__(self, **params):
+    def __init__(self, url, token, namespace,**params):
         self.host = params['host']
         self.dbname = params['dbname']
         self.table = params['table']
+        hvacClient.__init__(self,url, token, namespace)
+        self.client = self.get_vault_client()
 
     @staticmethod
     def get_config_entries():
@@ -32,6 +34,17 @@ class DBClient(hvacClient):
             raise Exception('sql statement throws error. Aborting!')
         return cursor
     
+    def select_query(self, where_clause, conn):
+        sql_stmt = f"""select
+            '<tr><td>' 
+            || concat_ws('</td><td>', birth_date, first_name, last_name, create_date, social_security_number, credit_card_number, address, salary)
+            || '</td></tr>' html
+            from customers
+            {where_clause}
+        order by 1; """
+        sql_stmt.format(where_clause=where_clause)
+        return self.executeSQL(sqlstmt=sql_stmt, connection=conn)
+    
     def insert_statement(self, row, conf):
         bdt = super(DBClient,self)._encrypt_non_ssn_ccn(row['birth_date'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
         ssn = super(DBClient,self)._encrypt_non_ssn_ccn(row['social_security_number'], conf['VAULT']['KeyName'], conf['VAULT']['secretPath'])
@@ -50,11 +63,11 @@ class DBClient(hvacClient):
                 )
         return statement
     
-    def get_table_rows(self, table, conf, where='' , limit=1):
+    def get_table_rows(self, table, conf, conn, where='' , limit=1):
         sql = " SELECT * FROM " +  str(table) + where +  ' LIMIT {}'.format(limit)
-        client = super(DBClient, self).get_vault_client()
-        connection = self.pgsql_connection(client=client)
-        cursor = self.executeSQL(sql, connection)
+        # client = hvacClient.get_vault_client()
+        # connection = self.pgsql_connection(client=client)
+        cursor = self.executeSQL(sql, connection=conn)
         results = []
 
         for row in cursor:
