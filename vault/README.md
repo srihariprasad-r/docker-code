@@ -24,7 +24,7 @@ Open another terminal,
 $ docker ps # check container-id for running containers
 $ docker exec vault-demo /bin/sh -c './vault/database-setup.sh'
 $ docker exec vault-demo /bin/sh -c './vault/transit-secret-engine.sh'
-$ docker exec vault-demo /bin/sh
+$ docker exec -it vault-demo /bin/sh
 # check status of vault
 $ vault status
 # you should see something as below
