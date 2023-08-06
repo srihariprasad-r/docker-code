@@ -22,7 +22,9 @@ Open another terminal,
 ```sh
 # running python image manually instead of docker-compose as python container exits upon start
 docker ps # check container-id for running containers
-docker exec -it <vault-image-container#> /bin/sh
+$ docker exec vault-demo /bin/sh -c './vault/database-setup.sh'
+$ docker exec vault-demo /bin/sh -c './vault/transit-secret-engine.sh'
+$ docker exec vault-demo /bin/sh
 # check status of vault
 $ vault status
 # you should see something as below
@@ -38,33 +40,6 @@ $ vault status
 # Build Date      2023-06-06T18:12:37Z
 # Storage Type    inmem
 # Cluster Name    vault-cluster-14e8f07e
-# confirm if files are copied inside vault/ folder
-$ cd vault 
-# there should be four shell scripts
-# create db credetials secrets in vault
-sh database-setup.sh 
-
-# Success! Disabled the secrets engine (if it existed) at: data_protection/database/
-# Success! Enabled the database secrets engine at: data_protection/database/
-# Success! Data written to: data_protection/database/config/postgres
-# Success! Data written to: data_protection/database/roles/vault-demo-app
-# Key                Value
-# ---                -----
-# lease_id           data_protection/database/creds/vault-demo-app/Tum01p4dXPrSQa4nyrt5fnwk
-# lease_duration     1h
-# lease_renewable    true
-# password           bbb9s3Gs-nv6iF4xyVQw
-# username           v-token-vault-de-XBDQKwV5ysFhznjUGrWU-1687686820
-$ sh transit-secret-engine.sh
-
-# Enabling the vault transit secrets engine...
-# Success! Disabled the secrets engine (if it existed) at: data_protection/transit/
-# Success! Enabled the transit secrets engine at: data_protection/transit/
-# Success! Data written to: data_protection/transit/keys/customer-key
-# Key            Value
-# ---            -----
-# ciphertext     vault:v1:GJm+i6VdMCtHKSSu6bBkH2pVfDc2k0Xvtd+kVw==
-# key_version    1
 
 # confirm is secrets are added to vault
 $ vault secrets list
@@ -100,7 +75,7 @@ Open VSCode terminal
 
 ```sh
 $ cd ../vault
-$ docker run --name vault_app_1 --network vault_dev-network -it vault-app /bin/sh
+$ docker run --name vault_app_1 --network vault_dev-network --port 5000:5000 -it vault-app /bin/sh
 $ ls
 # you should see python files
 
