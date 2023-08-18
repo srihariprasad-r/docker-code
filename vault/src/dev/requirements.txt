@@ -1,8 +1,0 @@
-psycopg2
-hvac
-pandas
-fastparquet
-fastavro
-avro
-flask 
-flask_restful
