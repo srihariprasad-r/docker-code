@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <h1> PII security framework </h1>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script>
+            var previous = [];
+            function check() {
+                if (document.getElementById('otype').value == 'file') {
+                    document.getElementById('filetype').disabled = false;
+                }
+                else {
+                    window.location.assign("/otype/")
+                }
+            }
+            
+            function sendUrl() {
+                if (document.getElementById("filetype").value) {
+                    window.location.assign("/otype/" + document.getElementById("filetype").value)
+                }
+                previous.append($('#otype').value);
+                previous.append($('#filetype').value);
+            }
+
+            function encryptURL() {
+                window.location.assign("/encrypt/")
+            }
+        </script>
+    </head>
+    <body>
+        <form>
+            <div class="form__fieldset">
+                <label for="otype" class="form__label">Type of object to be encrypted : </label>
+                <select name="otype" id="otype" onchange='check()' class="form__input form__select">
+                    <option value="">Select an object</option>
+                    <option value="table">table</option>
+                    <option value="file">file</option>
+                </select>
+            </div>
+
+            <div class="form__fieldset">
+                <label for="filetype" class="form__label">Choose filetype : </label>
+                <select onchange='sendUrl()' name="filetype" id="filetype" class="form__input form__select" disabled>
+                    <option value="">Select a format</option>
+                    <option value="csv">csv</option>
+                    <option value="avro">avro</option>
+                    <option value="json">json</option>
+                    <option value="parquet">parquet</option>
+                </select>
+            </div>
+            {% if tbl_out is defined %}
+                <h3> Unencrypted postgres table data: </h3>
+                {{ tbl_out | safe }}
+            {% endif %}
+            {% if out is defined %}
+                <h3> Unencrypted csv/parquet/avro data: </h3>
+                {{ out | safe }}
+            {% endif %}
+            {% if json_in is defined %}
+                <h3> Unencrypted json data: </h3>
+                {% for key in json_in %}
+                    <pre> {{ key }} </pre>
+                {% endfor %}
+            {% endif %}
+            <br>
+            <div class="form__fieldset">
+                <button class="form__submit" name="encrypt" type="button" value="Encrypt" onclick="encryptURL()">Encrypt</button> 
+            </div>
+            {% if encr_tbl_out is defined %}
+                <h3> Encrypted postgres table data: </h3>
+            {{ encr_tbl_out | safe }}
+            {% endif %}
+            {% if enc_out is defined %}
+                <h3> Encrypted csv/parquet/avro data: </h3>
+                {{ enc_out | safe }}
+            {% endif %}
+            {% if json_out is defined %}
+                <h3> Encrypted json data: </h3>
+                {% for key in json_out %}
+                    <pre> {{ key }} </pre>
+                {% endfor %}
+            {% endif %}
+            <br>
+        </form>
+    </body>
+</html>
